@@ -9,6 +9,7 @@ import {
 } from "@workspace/api-zod";
 import { and, desc, eq, gte, lt, sql } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/adminAuth";
+import { SERVICE_PRICES, type ServiceId } from "../lib/services";
 
 const router: IRouter = Router();
 
@@ -22,6 +23,8 @@ function serializeBooking(b: typeof bookingsTable.$inferSelect) {
     apartmentNumber: b.apartmentNumber,
     scheduledAt: b.scheduledAt.toISOString(),
     status: b.status,
+    services: b.services as ServiceId[],
+    totalPrice: b.totalPrice,
     notes: b.notes,
     createdAt: b.createdAt.toISOString(),
     updatedAt: b.updatedAt.toISOString(),
@@ -35,6 +38,11 @@ router.post("/bookings", async (req: Request, res: Response): Promise<void> => {
     return;
   }
   const data = parsed.data;
+  const services = data.services as ServiceId[];
+  const totalPrice = services.reduce(
+    (sum, id) => sum + (SERVICE_PRICES[id] ?? 0),
+    0,
+  );
   const [created] = await db
     .insert(bookingsTable)
     .values({
@@ -46,6 +54,8 @@ router.post("/bookings", async (req: Request, res: Response): Promise<void> => {
       scheduledAt: new Date(data.scheduledAt),
       notes: data.notes ?? null,
       status: "pending",
+      services,
+      totalPrice,
     })
     .returning();
   if (!created) {

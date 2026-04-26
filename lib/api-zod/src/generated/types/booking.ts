@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { BookingStatus } from "./bookingStatus";
+import type { ServiceId } from "./serviceId";
 
 export interface Booking {
   id: number;
@@ -16,6 +17,9 @@ export interface Booking {
   apartmentNumber: string;
   scheduledAt: Date;
   status: BookingStatus;
+  services: ServiceId[];
+  /** Total price in IQD */
+  totalPrice: number;
   notes?: string | null;
   createdAt: Date;
   updatedAt: Date;

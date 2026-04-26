@@ -227,6 +227,15 @@ components:
       type: string
       enum: [pending, in_progress, completed, cancelled]
 
+    ServiceId:
+      type: string
+      enum:
+        - hair
+        - beard
+        - skincare
+        - package_hair_beard
+        - package_full
+
     Booking:
       type: object
       properties:
@@ -247,6 +256,13 @@ components:
           format: date-time
         status:
           $ref: "#/components/schemas/BookingStatus"
+        services:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceId"
+        totalPrice:
+          type: integer
+          description: Total price in IQD
         notes:
           type: string
           nullable: true
@@ -265,6 +281,8 @@ components:
         - apartmentNumber
         - scheduledAt
         - status
+        - services
+        - totalPrice
         - createdAt
         - updatedAt
 
@@ -289,6 +307,11 @@ components:
         scheduledAt:
           type: string
           format: date-time
+        services:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceId"
+          minItems: 1
         notes:
           type: string
           nullable: true
@@ -299,6 +322,7 @@ components:
         - buildingNumber
         - apartmentNumber
         - scheduledAt
+        - services
 
     UpdateBookingStatusBody:
       type: object

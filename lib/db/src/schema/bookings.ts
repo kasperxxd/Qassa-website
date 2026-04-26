@@ -1,4 +1,6 @@
+import { sql } from "drizzle-orm";
 import {
+  integer,
   pgTable,
   serial,
   text,
@@ -15,6 +17,11 @@ export const bookingsTable = pgTable("bookings", {
   apartmentNumber: text("apartment_number").notNull(),
   scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
   status: varchar("status", { length: 20 }).notNull().default("pending"),
+  services: text("services")
+    .array()
+    .notNull()
+    .default(sql`ARRAY[]::text[]`),
+  totalPrice: integer("total_price").notNull().default(0),
   notes: text("notes"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()

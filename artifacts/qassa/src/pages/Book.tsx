@@ -1,13 +1,13 @@
-import { useState } from "react";
 import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
 import { arSA } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Check } from "lucide-react";
 
 import { useCreateBooking } from "@workspace/api-client-react";
+import type { ServiceId } from "@workspace/api-client-react/src/generated/api.schemas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -18,6 +18,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { SERVICE_CATALOG, calculateTotal, formatIQD } from "@/lib/services";
+
+const SERVICE_IDS = SERVICE_CATALOG.map((s) => s.id) as [ServiceId, ...ServiceId[]];
 
 const bookingSchema = z.object({
   fullName: z.string().min(2, "الاسم الكامل مطلوب"),
@@ -28,6 +31,9 @@ const bookingSchema = z.object({
   scheduledAt: z.date({
     required_error: "يرجى تحديد الموعد",
   }),
+  services: z
+    .array(z.enum(SERVICE_IDS))
+    .min(1, "يرجى اختيار خدمة واحدة على الأقل"),
   notes: z.string().optional(),
 });
 
@@ -45,9 +51,13 @@ export default function Book() {
       blockNumber: "",
       buildingNumber: "",
       apartmentNumber: "",
+      services: [],
       notes: "",
     },
   });
+
+  const selectedServices = form.watch("services") ?? [];
+  const total = calculateTotal(selectedServices);
 
   const onSubmit = (data: BookingFormValues) => {
     createBooking.mutate(
@@ -59,6 +69,7 @@ export default function Book() {
           buildingNumber: data.buildingNumber,
           apartmentNumber: data.apartmentNumber,
           scheduledAt: data.scheduledAt.toISOString(),
+          services: data.services,
           notes: data.notes || undefined,
         },
       },
@@ -202,6 +213,83 @@ export default function Book() {
                       </PopoverContent>
                     </Popover>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="services"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-semibold">
+                      اختر الخدمات
+                    </FormLabel>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {SERVICE_CATALOG.map((svc) => {
+                        const checked = (field.value ?? []).includes(svc.id);
+                        return (
+                          <button
+                            type="button"
+                            key={svc.id}
+                            onClick={() => {
+                              const current = field.value ?? [];
+                              field.onChange(
+                                checked
+                                  ? current.filter((id) => id !== svc.id)
+                                  : [...current, svc.id],
+                              );
+                            }}
+                            data-testid={`service-${svc.id}`}
+                            className={cn(
+                              "group text-right p-4 rounded-xl border-2 bg-white transition-all",
+                              "hover:border-primary/60 hover:shadow-md",
+                              checked
+                                ? "border-primary bg-primary/5 shadow-sm"
+                                : "border-input",
+                            )}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-sm leading-tight">
+                                  {svc.label}
+                                </p>
+                                {svc.description && (
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {svc.description}
+                                  </p>
+                                )}
+                                <p className="text-primary font-bold mt-2">
+                                  {formatIQD(svc.price)}
+                                </p>
+                              </div>
+                              <div
+                                className={cn(
+                                  "shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors",
+                                  checked
+                                    ? "bg-primary border-primary text-primary-foreground"
+                                    : "border-input bg-white",
+                                )}
+                              >
+                                {checked && <Check className="w-4 h-4" />}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <FormMessage />
+                    <div className="mt-3 flex items-center justify-between rounded-lg bg-primary/5 border border-primary/20 px-4 py-3">
+                      <span className="text-sm font-semibold">
+                        المجموع
+                      </span>
+                      <span
+                        className="text-xl font-bold text-primary"
+                        data-testid="text-total-price"
+                      >
+                        {formatIQD(total)}
+                      </span>
+                    </div>
                   </FormItem>
                 )}
               />

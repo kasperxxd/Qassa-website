@@ -5,6 +5,7 @@
  * Qassa booking API
  * OpenAPI spec version: 0.1.0
  */
+import type { ServiceId } from "./serviceId";
 
 export interface CreateBookingBody {
   /** @minLength 2 */
@@ -18,5 +19,7 @@ export interface CreateBookingBody {
   /** @minLength 1 */
   apartmentNumber: string;
   scheduledAt: Date;
+  /** @minItems 1 */
+  services: ServiceId[];
   notes?: string | null;
 }

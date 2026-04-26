@@ -20,4 +20,5 @@ export * from "./listGalleryItemsParams";
 export * from "./listGalleryItemsSection";
 export * from "./queuePosition";
 export * from "./queueSummary";
+export * from "./serviceId";
 export * from "./updateBookingStatusBody";

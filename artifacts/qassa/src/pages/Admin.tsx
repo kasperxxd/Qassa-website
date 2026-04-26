@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import { BookingStatus, GallerySection } from "@workspace/api-client-react/src/generated/api.schemas";
 import { AdminAuth, AdminLogoutButton } from "@/components/AdminAuth";
 import { openWhatsApp } from "@/lib/whatsapp";
+import { getService, formatIQD } from "@/lib/services";
 
 export default function Admin() {
   return (
@@ -176,6 +177,8 @@ function AdminPanel({ onLogout }: { onLogout: () => Promise<void> }) {
                       <TableHead className="text-right">العميل</TableHead>
                       <TableHead className="text-right">الهاتف</TableHead>
                       <TableHead className="text-right">الموعد</TableHead>
+                      <TableHead className="text-right">الخدمات</TableHead>
+                      <TableHead className="text-right">المجموع</TableHead>
                       <TableHead className="text-right">الحالة</TableHead>
                       <TableHead className="text-right">إجراء</TableHead>
                     </TableRow>
@@ -187,6 +190,29 @@ function AdminPanel({ onLogout }: { onLogout: () => Promise<void> }) {
                         <TableCell>{b.fullName}</TableCell>
                         <TableCell dir="ltr" className="text-right">{b.phone}</TableCell>
                         <TableCell>{format(new Date(b.scheduledAt), "PPP", { locale: arSA })}</TableCell>
+                        <TableCell className="max-w-[220px]">
+                          <div className="flex flex-wrap gap-1">
+                            {b.services?.length ? (
+                              b.services.map((sid) => {
+                                const svc = getService(sid);
+                                return (
+                                  <Badge
+                                    key={sid}
+                                    variant="secondary"
+                                    className="text-xs font-normal"
+                                  >
+                                    {svc?.label ?? sid}
+                                  </Badge>
+                                );
+                              })
+                            ) : (
+                              <span className="text-xs text-muted-foreground">—</span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-semibold text-primary whitespace-nowrap">
+                          {formatIQD(b.totalPrice ?? 0)}
+                        </TableCell>
                         <TableCell>
                           <Badge variant="outline" className={`border-0 ${statusMap[b.status].color}`}>
                             {statusMap[b.status].label}

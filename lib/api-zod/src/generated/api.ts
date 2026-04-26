@@ -28,6 +28,17 @@ export const CreateBookingBody = zod.object({
   buildingNumber: zod.string().min(1),
   apartmentNumber: zod.string().min(1),
   scheduledAt: zod.coerce.date(),
+  services: zod
+    .array(
+      zod.enum([
+        "hair",
+        "beard",
+        "skincare",
+        "package_hair_beard",
+        "package_full",
+      ]),
+    )
+    .min(1),
   notes: zod.string().nullish(),
 });
 
@@ -49,6 +60,16 @@ export const ListBookingsResponseItem = zod.object({
   apartmentNumber: zod.string(),
   scheduledAt: zod.coerce.date(),
   status: zod.enum(["pending", "in_progress", "completed", "cancelled"]),
+  services: zod.array(
+    zod.enum([
+      "hair",
+      "beard",
+      "skincare",
+      "package_hair_beard",
+      "package_full",
+    ]),
+  ),
+  totalPrice: zod.number().describe("Total price in IQD"),
   notes: zod.string().nullish(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
@@ -71,6 +92,16 @@ export const GetBookingResponse = zod.object({
   apartmentNumber: zod.string(),
   scheduledAt: zod.coerce.date(),
   status: zod.enum(["pending", "in_progress", "completed", "cancelled"]),
+  services: zod.array(
+    zod.enum([
+      "hair",
+      "beard",
+      "skincare",
+      "package_hair_beard",
+      "package_full",
+    ]),
+  ),
+  totalPrice: zod.number().describe("Total price in IQD"),
   notes: zod.string().nullish(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
@@ -96,6 +127,16 @@ export const UpdateBookingStatusResponse = zod.object({
   apartmentNumber: zod.string(),
   scheduledAt: zod.coerce.date(),
   status: zod.enum(["pending", "in_progress", "completed", "cancelled"]),
+  services: zod.array(
+    zod.enum([
+      "hair",
+      "beard",
+      "skincare",
+      "package_hair_beard",
+      "package_full",
+    ]),
+  ),
+  totalPrice: zod.number().describe("Total price in IQD"),
   notes: zod.string().nullish(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),

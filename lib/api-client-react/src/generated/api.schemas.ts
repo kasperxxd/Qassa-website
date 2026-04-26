@@ -18,6 +18,16 @@ export const BookingStatus = {
   cancelled: "cancelled",
 } as const;
 
+export type ServiceId = (typeof ServiceId)[keyof typeof ServiceId];
+
+export const ServiceId = {
+  hair: "hair",
+  beard: "beard",
+  skincare: "skincare",
+  package_hair_beard: "package_hair_beard",
+  package_full: "package_full",
+} as const;
+
 export interface Booking {
   id: number;
   fullName: string;
@@ -27,6 +37,9 @@ export interface Booking {
   apartmentNumber: string;
   scheduledAt: string;
   status: BookingStatus;
+  services: ServiceId[];
+  /** Total price in IQD */
+  totalPrice: number;
   notes?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -44,6 +57,8 @@ export interface CreateBookingBody {
   /** @minLength 1 */
   apartmentNumber: string;
   scheduledAt: string;
+  /** @minItems 1 */
+  services: ServiceId[];
   notes?: string | null;
 }
 
