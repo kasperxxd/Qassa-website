@@ -1,0 +1,62 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "aT8RhtLr7ZJimT26mbTFV"
+uri = "file://artifacts/qassa/src/assets/images/hero.png"
+type = "image"
+title = "Minimalist barber tools on white background"
+
+[[generated]]
+id = "edjpcsS7yGlmnfDIqNY3-"
+uri = "file://artifacts/qassa/src/assets/images/service-1.png"
+type = "image"
+title = "Barber cutting hair at home"
+
+[[generated]]
+id = "x21QfPjhk2DSeO30iHM5M"
+uri = "file://artifacts/qassa/src/assets/images/customer-1.png"
+type = "image"
+title = "Customer looking at mirror after haircut"
+
+[[generated]]
+id = "-5r8z9bJqk7oMFZ-TceK_"
+uri = "file://attached_assets/generated_images/generated_image_0.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Mk6O5wq_stRpjjIxtPkVM"
+uri = "file://attached_assets/generated_images/generated_image_1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "t7EeO6tB0hRQJ_k6MU4Uz"
+uri = "file://attached_assets/generated_images/generated_image_2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Y5ZncD7l_xdS70l7xkEyO"
+uri = "file://attached_assets/generated_images/generated_image_3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "bfgJCL_royoNDu7UDFScM"
+uri = "file://attached_assets/generated_images/generated_image_4.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "J0hKsbh14KLPLQzhCOB96"
+uri = "file://attached_assets/generated_images/generated_image_5.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Om3_-uNQUUGFUZolR5ZG6"
+uri = "file://attached_assets/generated_images/generated_image_6.png"
+type = "image"
+title = "generated_image"

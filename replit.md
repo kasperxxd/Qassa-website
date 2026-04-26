@@ -2,19 +2,39 @@
 
 ## Overview
 
-pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+pnpm workspace monorepo containing **Qassa** — a home barber booking service in Arabic (RTL).
+Customers book a barber to come to their home, then track their queue position live.
+
+## Artifacts
+
+- `artifacts/qassa` — React + Vite frontend (Arabic RTL, dark green + off-white palette)
+- `artifacts/api-server` — Express 5 API server (Node 24)
+- `artifacts/mockup-sandbox` — Component prototyping sandbox
+
+## Pages
+
+- `/` — Home (hero + CTA to book)
+- `/book` — Booking form (name, phone, block/building/apartment, datetime)
+- `/queue/:id` — Live queue tracking (auto-refresh every 5s)
+- `/gallery` — Auto-rotating styles carousel + recent customers grid
+- `/admin` — Manage bookings (status updates) and gallery items (add/delete)
 
 ## Stack
 
 - **Monorepo tool**: pnpm workspaces
 - **Node.js version**: 24
-- **Package manager**: pnpm
 - **TypeScript version**: 5.9
 - **API framework**: Express 5
 - **Database**: PostgreSQL + Drizzle ORM
 - **Validation**: Zod (`zod/v4`), `drizzle-zod`
 - **API codegen**: Orval (from OpenAPI spec)
+- **Frontend**: React + Vite, Tailwind v4, shadcn/ui, framer-motion, react-query, wouter, react-hook-form
 - **Build**: esbuild (CJS bundle)
+
+## Database Schema
+
+- `bookings` — id, full_name, phone, block_number, building_number, apartment_number, scheduled_at, status (pending/in_progress/completed/cancelled), notes, timestamps
+- `gallery_items` — id, section (styles/customers), image_url, title, style_type, created_at
 
 ## Key Commands
 
@@ -22,6 +42,8 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- `pnpm --filter @workspace/api-server run dev` — run API server locally
 
-See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+## Notes
+
+- The Zod barrel re-export (`lib/api-zod/src/index.ts`) explicitly aliases the
+  `*Body` schemas with a `Schema` suffix to avoid colliding with the inferred TS interfaces.

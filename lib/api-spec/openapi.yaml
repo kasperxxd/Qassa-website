@@ -3,20 +3,27 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Qassa booking API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: bookings
+    description: Booking operations
+  - name: queue
+    description: Queue tracking
+  - name: gallery
+    description: Gallery management
+  - name: admin
+    description: Admin operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +31,189 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /bookings:
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Create a new booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookingBody"
+      responses:
+        "201":
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+    get:
+      operationId: listBookings
+      tags: [admin]
+      summary: List all bookings (admin)
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [pending, in_progress, completed, cancelled]
+      responses:
+        "200":
+          description: List of bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+
+  /bookings/{id}:
+    get:
+      operationId: getBooking
+      tags: [bookings]
+      summary: Get a booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Booking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /bookings/{id}/status:
+    patch:
+      operationId: updateBookingStatus
+      tags: [admin]
+      summary: Update booking status (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBookingStatusBody"
+      responses:
+        "200":
+          description: Updated booking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /bookings/{id}/queue-position:
+    get:
+      operationId: getQueuePosition
+      tags: [queue]
+      summary: Get the queue position and status for a booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Queue position info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueuePosition"
+
+  /queue/summary:
+    get:
+      operationId: getQueueSummary
+      tags: [queue]
+      summary: Overall queue summary
+      responses:
+        "200":
+          description: Queue summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueueSummary"
+
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Admin dashboard stats
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /gallery:
+    get:
+      operationId: listGalleryItems
+      tags: [gallery]
+      summary: List gallery items
+      parameters:
+        - name: section
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [styles, customers]
+      responses:
+        "200":
+          description: Gallery items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GalleryItem"
+    post:
+      operationId: createGalleryItem
+      tags: [admin]
+      summary: Add a gallery item (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGalleryItemBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GalleryItem"
+
+  /gallery/{id}:
+    delete:
+      operationId: deleteGalleryItem
+      tags: [admin]
+      summary: Delete a gallery item (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +221,180 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    BookingStatus:
+      type: string
+      enum: [pending, in_progress, completed, cancelled]
+
+    Booking:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        phone:
+          type: string
+        blockNumber:
+          type: string
+        buildingNumber:
+          type: string
+        apartmentNumber:
+          type: string
+        scheduledAt:
+          type: string
+          format: date-time
+        status:
+          $ref: "#/components/schemas/BookingStatus"
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - fullName
+        - phone
+        - blockNumber
+        - buildingNumber
+        - apartmentNumber
+        - scheduledAt
+        - status
+        - createdAt
+        - updatedAt
+
+    CreateBookingBody:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 2
+        phone:
+          type: string
+          minLength: 4
+        blockNumber:
+          type: string
+          minLength: 1
+        buildingNumber:
+          type: string
+          minLength: 1
+        apartmentNumber:
+          type: string
+          minLength: 1
+        scheduledAt:
+          type: string
+          format: date-time
+        notes:
+          type: string
+          nullable: true
+      required:
+        - fullName
+        - phone
+        - blockNumber
+        - buildingNumber
+        - apartmentNumber
+        - scheduledAt
+
+    UpdateBookingStatusBody:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/BookingStatus"
+      required: [status]
+
+    QueuePosition:
+      type: object
+      properties:
+        bookingId:
+          type: integer
+        status:
+          $ref: "#/components/schemas/BookingStatus"
+        position:
+          type: integer
+          description: Position in queue (1 = next). 0 if not in queue.
+        totalWaiting:
+          type: integer
+        currentlyServing:
+          type: integer
+          nullable: true
+          description: Booking ID currently being served, if any
+      required: [bookingId, status, position, totalWaiting]
+
+    QueueSummary:
+      type: object
+      properties:
+        totalWaiting:
+          type: integer
+        inProgress:
+          type: integer
+        completedToday:
+          type: integer
+      required: [totalWaiting, inProgress, completedToday]
+
+    AdminStats:
+      type: object
+      properties:
+        totalBookings:
+          type: integer
+        pendingCount:
+          type: integer
+        inProgressCount:
+          type: integer
+        completedCount:
+          type: integer
+        cancelledCount:
+          type: integer
+        todayBookings:
+          type: integer
+      required:
+        - totalBookings
+        - pendingCount
+        - inProgressCount
+        - completedCount
+        - cancelledCount
+        - todayBookings
+
+    GallerySection:
+      type: string
+      enum: [styles, customers]
+
+    GalleryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        section:
+          $ref: "#/components/schemas/GallerySection"
+        imageUrl:
+          type: string
+        title:
+          type: string
+          nullable: true
+        styleType:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, section, imageUrl, createdAt]
+
+    CreateGalleryItemBody:
+      type: object
+      properties:
+        section:
+          $ref: "#/components/schemas/GallerySection"
+        imageUrl:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          nullable: true
+        styleType:
+          type: string
+          nullable: true
+      required: [section, imageUrl]

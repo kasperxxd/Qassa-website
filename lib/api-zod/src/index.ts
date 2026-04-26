@@ -1,2 +1,22 @@
-export * from "./generated/api";
 export * from "./generated/types";
+export {
+  HealthCheckResponse,
+  CreateBookingBody as CreateBookingBodySchema,
+  UpdateBookingStatusBody as UpdateBookingStatusBodySchema,
+  CreateGalleryItemBody as CreateGalleryItemBodySchema,
+  ListBookingsQueryParams,
+  ListBookingsResponseItem,
+  ListBookingsResponse,
+  GetBookingParams,
+  GetBookingResponse,
+  UpdateBookingStatusParams,
+  UpdateBookingStatusResponse,
+  GetQueuePositionParams,
+  GetQueuePositionResponse,
+  GetQueueSummaryResponse,
+  GetAdminStatsResponse,
+  ListGalleryItemsQueryParams,
+  ListGalleryItemsResponseItem,
+  ListGalleryItemsResponse,
+  DeleteGalleryItemParams,
+} from "./generated/api";

@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Qassa - حجز الحلاقة"
+version = "1.0.0"
+id = "artifacts/qassa"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19775
+
+[services.development]
+run = "pnpm --filter @workspace/qassa run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/qassa", "run", "build" ]
+publicDir = "artifacts/qassa/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19775"
+BASE_PATH = "/"
