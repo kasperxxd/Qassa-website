@@ -23,8 +23,17 @@ import { arSA } from "date-fns/locale";
 import { Users, Clock, CheckCircle2, XCircle, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { BookingStatus, GallerySection } from "@workspace/api-client-react/src/generated/api.schemas";
+import { AdminAuth, AdminLogoutButton } from "@/components/AdminAuth";
 
 export default function Admin() {
+  return (
+    <AdminAuth>
+      {(logout) => <AdminPanel onLogout={logout} />}
+    </AdminAuth>
+  );
+}
+
+function AdminPanel({ onLogout }: { onLogout: () => Promise<void> }) {
   const queryClient = useQueryClient();
   const { data: stats } = useGetAdminStats();
   const { data: bookings } = useListBookings();
@@ -89,6 +98,7 @@ export default function Admin() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">لوحة الإدارة</h1>
+        <AdminLogoutButton onLogout={onLogout} />
       </div>
 
       {stats && (

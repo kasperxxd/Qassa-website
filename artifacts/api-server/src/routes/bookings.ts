@@ -8,6 +8,7 @@ import {
   ListBookingsQueryParams,
 } from "@workspace/api-zod";
 import { and, desc, eq, gte, lt, sql } from "drizzle-orm";
+import { requireAdmin } from "../middlewares/adminAuth";
 
 const router: IRouter = Router();
 
@@ -54,7 +55,7 @@ router.post("/bookings", async (req: Request, res: Response): Promise<void> => {
   res.status(201).json(serializeBooking(created));
 });
 
-router.get("/bookings", async (req: Request, res: Response): Promise<void> => {
+router.get("/bookings", requireAdmin, async (req: Request, res: Response): Promise<void> => {
   const parsed = ListBookingsQueryParams.safeParse(req.query);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid query", details: parsed.error.issues });
@@ -88,7 +89,7 @@ router.get("/bookings/:id", async (req: Request, res: Response): Promise<void> =
   res.json(serializeBooking(row));
 });
 
-router.patch("/bookings/:id/status", async (req: Request, res: Response): Promise<void> => {
+router.patch("/bookings/:id/status", requireAdmin, async (req: Request, res: Response): Promise<void> => {
   const paramsParsed = UpdateBookingStatusParams.safeParse(req.params);
   if (!paramsParsed.success || !paramsParsed.data) {
     res.status(400).json({ error: "Invalid id" });
@@ -190,7 +191,7 @@ router.get("/queue/summary", async (_req: Request, res: Response): Promise<void>
   });
 });
 
-router.get("/admin/stats", async (_req: Request, res: Response): Promise<void> => {
+router.get("/admin/stats", requireAdmin, async (_req: Request, res: Response): Promise<void> => {
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
   const startOfTomorrow = new Date(startOfDay);

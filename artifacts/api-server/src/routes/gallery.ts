@@ -6,6 +6,7 @@ import {
   ListGalleryItemsQueryParams,
 } from "@workspace/api-zod";
 import { desc, eq } from "drizzle-orm";
+import { requireAdmin } from "../middlewares/adminAuth";
 
 const router: IRouter = Router();
 
@@ -40,7 +41,7 @@ router.get("/gallery", async (req: Request, res: Response): Promise<void> => {
   res.json(rows.map(serialize));
 });
 
-router.post("/gallery", async (req: Request, res: Response): Promise<void> => {
+router.post("/gallery", requireAdmin, async (req: Request, res: Response): Promise<void> => {
   const parsed = CreateGalleryItemBodySchema.safeParse(req.body);
   if (!parsed.success || !parsed.data) {
     res.status(400).json({ error: "Invalid input", details: parsed.error?.issues });
@@ -63,7 +64,7 @@ router.post("/gallery", async (req: Request, res: Response): Promise<void> => {
   res.status(201).json(serialize(created));
 });
 
-router.delete("/gallery/:id", async (req: Request, res: Response): Promise<void> => {
+router.delete("/gallery/:id", requireAdmin, async (req: Request, res: Response): Promise<void> => {
   const parsed = DeleteGalleryItemParams.safeParse(req.params);
   if (!parsed.success || !parsed.data) {
     res.status(400).json({ error: "Invalid id" });
