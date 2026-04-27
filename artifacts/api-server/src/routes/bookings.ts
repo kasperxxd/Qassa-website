@@ -23,7 +23,7 @@ function serializeBooking(b: typeof bookingsTable.$inferSelect) {
     apartmentNumber: b.apartmentNumber,
     scheduledAt: b.scheduledAt.toISOString(),
     status: b.status,
-    services: b.services ? b.services.split(",") as ServiceId[] : [],
+    services: b.services as ServiceId[],
     totalPrice: b.totalPrice,
     notes: b.notes,
     createdAt: b.createdAt.toISOString(),
@@ -54,7 +54,7 @@ router.post("/bookings", async (req: Request, res: Response): Promise<void> => {
       scheduledAt: new Date(data.scheduledAt),
       notes: data.notes ?? null,
       status: "pending",
-      services: services.join(","),
+      services,
       totalPrice,
     })
     .returning();
