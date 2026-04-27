@@ -1,7 +1,7 @@
 if (process.env["NODE_ENV"] === "production") {
   const staticDir = path.resolve(
     process.cwd(),
-    process.env["STATIC_DIR"] ?? "artifacts/qassa/dist",
+    process.env["STATIC_DIR"] ?? "artifacts/qassa/dist/public",
   );
 
   if (existsSync(staticDir)) {
