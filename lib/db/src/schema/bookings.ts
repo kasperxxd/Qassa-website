@@ -18,9 +18,9 @@ export const bookingsTable = pgTable("bookings", {
   scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
   status: varchar("status", { length: 20 }).notNull().default("pending"),
   services: text("services")
-    .array()
-    .notNull()
-    .default(sql`ARRAY[]::text[]`),
+  .array()
+  .notNull()
+  .default(sql`'{}'::text[]`),
   totalPrice: integer("total_price").notNull().default(0),
   notes: text("notes"),
   createdAt: timestamp("created_at", { withTimezone: true })
