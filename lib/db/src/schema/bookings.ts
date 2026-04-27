@@ -17,9 +17,10 @@ export const bookingsTable = pgTable("bookings_v2", {
   apartmentNumber: text("apartment_number").notNull(),
   scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
   status: varchar("status", { length: 20 }).notNull().default("pending"),
- // ابحث عن تعريف services واستبدله بهذا السطر:
-  services: text("services").notNull().default(""),
-
+  services: text("services")
+    .array()
+    .notNull()
+    .default(sql`ARRAY[]::text[]`),
   totalPrice: integer("total_price").notNull().default(0),
   notes: text("notes"),
   createdAt: timestamp("created_at", { withTimezone: true })
