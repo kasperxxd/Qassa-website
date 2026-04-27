@@ -40,7 +40,10 @@ app.use("/api", router);
 // keeps owning the client.
 if (process.env["NODE_ENV"] === "production") {
   const staticDir = path.resolve(
-    process.cwd(),
+    __dirname,
+    "..",
+    "..",
+    "..",
     process.env["STATIC_DIR"] ?? "artifacts/qassa/dist/public",
   );
 
