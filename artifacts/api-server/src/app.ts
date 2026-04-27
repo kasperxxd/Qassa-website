@@ -39,9 +39,10 @@ app.use("/api", router);
 // qassa frontend from the same Node process. Skipped in dev so Vite
 // keeps owning the client.
 if (process.env["NODE_ENV"] === "production") {
-const staticDir =
-  process.env["STATIC_DIR"] ??
-  path.resolve(__dirname, "../../../qassa/dist/public");
+  const staticDir = path.resolve(
+    process.cwd(),
+    process.env["STATIC_DIR"] ?? "artifacts/qassa/dist/public",
+  );
 
   if (existsSync(staticDir)) {
     logger.info({ staticDir }, "Serving static frontend");
