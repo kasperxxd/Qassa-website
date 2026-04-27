@@ -54,7 +54,8 @@ router.post("/bookings", async (req: Request, res: Response): Promise<void> => {
       scheduledAt: new Date(data.scheduledAt),
       notes: data.notes ?? null,
       status: "pending",
-     services: services.join(","),
+      services,
+      totalPrice,
     })
     .returning();
   if (!created) {
