@@ -8,7 +8,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-export const bookingsTable = pgTable("bookings", {
+export const bookingsTable = pgTable("bookings_v2", {
   id: serial("id").primaryKey(),
   fullName: text("full_name").notNull(),
   phone: text("phone").notNull(),
