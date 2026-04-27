@@ -6,11 +6,13 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./adminRevenue";
 export * from "./adminStats";
 export * from "./booking";
 export * from "./bookingStatus";
 export * from "./createBookingBody";
 export * from "./createGalleryItemBody";
+export * from "./dailyRevenuePoint";
 export * from "./galleryItem";
 export * from "./gallerySection";
 export * from "./healthStatus";

@@ -184,6 +184,27 @@ export const GetAdminStatsResponse = zod.object({
 });
 
 /**
+ * @summary Revenue summary and 7-day breakdown (admin)
+ */
+export const GetAdminRevenueResponse = zod.object({
+  todayTotal: zod.number().describe("Today's completed-booking revenue in IQD"),
+  weekTotal: zod
+    .number()
+    .describe("Last 7 days completed-booking revenue in IQD"),
+  allTimeTotal: zod
+    .number()
+    .describe("All-time completed-booking revenue in IQD"),
+  daily: zod
+    .array(
+      zod.object({
+        date: zod.string().describe("ISO date (YYYY-MM-DD)"),
+        total: zod.number().describe("Total revenue (IQD) for the day"),
+      }),
+    )
+    .describe("Last 7 days, oldest first"),
+});
+
+/**
  * @summary List gallery items
  */
 export const ListGalleryItemsQueryParams = zod.object({

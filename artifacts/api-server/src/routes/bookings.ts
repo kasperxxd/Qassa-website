@@ -201,6 +201,80 @@ router.get("/queue/summary", async (_req: Request, res: Response): Promise<void>
   });
 });
 
+router.get(
+  "/admin/revenue",
+  requireAdmin,
+  async (_req: Request, res: Response): Promise<void> => {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const startOfTomorrow = new Date(startOfDay);
+    startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+
+    const startOfWeek = new Date(startOfDay);
+    startOfWeek.setDate(startOfWeek.getDate() - 6); // 7-day window incl. today
+
+    const [todayRow] = await db
+      .select({ total: sql<number>`coalesce(sum(${bookingsTable.totalPrice}), 0)::int` })
+      .from(bookingsTable)
+      .where(
+        and(
+          eq(bookingsTable.status, "completed"),
+          gte(bookingsTable.updatedAt, startOfDay),
+          lt(bookingsTable.updatedAt, startOfTomorrow),
+        ),
+      );
+
+    const [weekRow] = await db
+      .select({ total: sql<number>`coalesce(sum(${bookingsTable.totalPrice}), 0)::int` })
+      .from(bookingsTable)
+      .where(
+        and(
+          eq(bookingsTable.status, "completed"),
+          gte(bookingsTable.updatedAt, startOfWeek),
+          lt(bookingsTable.updatedAt, startOfTomorrow),
+        ),
+      );
+
+    const [allTimeRow] = await db
+      .select({ total: sql<number>`coalesce(sum(${bookingsTable.totalPrice}), 0)::int` })
+      .from(bookingsTable)
+      .where(eq(bookingsTable.status, "completed"));
+
+    const dailyRows = await db
+      .select({
+        day: sql<string>`to_char(date_trunc('day', ${bookingsTable.updatedAt}), 'YYYY-MM-DD')`,
+        total: sql<number>`coalesce(sum(${bookingsTable.totalPrice}), 0)::int`,
+      })
+      .from(bookingsTable)
+      .where(
+        and(
+          eq(bookingsTable.status, "completed"),
+          gte(bookingsTable.updatedAt, startOfWeek),
+          lt(bookingsTable.updatedAt, startOfTomorrow),
+        ),
+      )
+      .groupBy(sql`date_trunc('day', ${bookingsTable.updatedAt})`);
+
+    const totalsByDate = new Map<string, number>();
+    for (const r of dailyRows) totalsByDate.set(r.day, r.total ?? 0);
+
+    const daily: Array<{ date: string; total: number }> = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(startOfDay);
+      d.setDate(d.getDate() - i);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      daily.push({ date: key, total: totalsByDate.get(key) ?? 0 });
+    }
+
+    res.json({
+      todayTotal: todayRow?.total ?? 0,
+      weekTotal: weekRow?.total ?? 0,
+      allTimeTotal: allTimeRow?.total ?? 0,
+      daily,
+    });
+  },
+);
+
 router.get("/admin/stats", requireAdmin, async (_req: Request, res: Response): Promise<void> => {
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);

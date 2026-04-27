@@ -91,6 +91,24 @@ export interface AdminStats {
   todayBookings: number;
 }
 
+export interface DailyRevenuePoint {
+  /** ISO date (YYYY-MM-DD) */
+  date: string;
+  /** Total revenue (IQD) for the day */
+  total: number;
+}
+
+export interface AdminRevenue {
+  /** Today's completed-booking revenue in IQD */
+  todayTotal: number;
+  /** Last 7 days completed-booking revenue in IQD */
+  weekTotal: number;
+  /** All-time completed-booking revenue in IQD */
+  allTimeTotal: number;
+  /** Last 7 days, oldest first */
+  daily: DailyRevenuePoint[];
+}
+
 export type GallerySection =
   (typeof GallerySection)[keyof typeof GallerySection];
 

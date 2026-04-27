@@ -160,6 +160,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/AdminStats"
 
+  /admin/revenue:
+    get:
+      operationId: getAdminRevenue
+      tags: [admin]
+      summary: Revenue summary and 7-day breakdown (admin)
+      responses:
+        "200":
+          description: Revenue
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminRevenue"
+
   /gallery:
     get:
       operationId: listGalleryItems
@@ -382,6 +395,36 @@ components:
         - completedCount
         - cancelledCount
         - todayBookings
+
+    DailyRevenuePoint:
+      type: object
+      properties:
+        date:
+          type: string
+          description: ISO date (YYYY-MM-DD)
+        total:
+          type: integer
+          description: Total revenue (IQD) for the day
+      required: [date, total]
+
+    AdminRevenue:
+      type: object
+      properties:
+        todayTotal:
+          type: integer
+          description: Today's completed-booking revenue in IQD
+        weekTotal:
+          type: integer
+          description: Last 7 days completed-booking revenue in IQD
+        allTimeTotal:
+          type: integer
+          description: All-time completed-booking revenue in IQD
+        daily:
+          type: array
+          items:
+            $ref: "#/components/schemas/DailyRevenuePoint"
+          description: Last 7 days, oldest first
+      required: [todayTotal, weekTotal, allTimeTotal, daily]
 
     GallerySection:
       type: string

@@ -26,6 +26,7 @@ import { BookingStatus, GallerySection } from "@workspace/api-client-react/src/g
 import { AdminAuth, AdminLogoutButton } from "@/components/AdminAuth";
 import { openWhatsApp } from "@/lib/whatsapp";
 import { getService, formatIQD } from "@/lib/services";
+import { RevenueChart } from "@/components/RevenueChart";
 
 export default function Admin() {
   return (
@@ -110,6 +111,8 @@ function AdminPanel({ onLogout }: { onLogout: () => Promise<void> }) {
         <h1 className="text-3xl font-bold">لوحة الإدارة</h1>
         <AdminLogoutButton onLogout={onLogout} />
       </div>
+
+      <RevenueChart />
 
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
